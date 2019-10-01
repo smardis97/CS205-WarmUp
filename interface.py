@@ -67,7 +67,10 @@ while run:
                     cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
                     rows = cur.fetchall()
                     for row in rows:
-                        print("%s, %s: %s" % (query[2], row[1], row[2]))
+                        if row[2] == -1:
+                            print("%s, %s: population unlisted in database" % (query[2], row[1]))
+                        else:
+                            print("%s, %s: %s" % (query[2], row[1], row[2]))
                     success = True
 
         if query[0] == "density":  # density city x (state x)
@@ -102,7 +105,9 @@ while run:
 
         if query[0] == "state" and query[1] == "city":  # state city x
             cur.execute("SELECT state FROM Cities WHERE city_name = ?", (query[2],))
-            print(cur.fetchone()[0])
+            rows = cur.fetchall()
+            for row in rows:
+                print("%s, %s" % (query[2], row[0]))
             success = True
 
         if query[0] == "capital" and query[1] == "state": #capital state [x]
@@ -111,4 +116,16 @@ while run:
             cur.execute("SELECT city_name FROM Cities WHERE rowid = ?", (capital_rowid,))
             print(cur.fetchone()[0])
 
-    # if not success: #user failed to input a correct command, help them out
+    if not success: #user failed to input a correct command, help them out
+        if query: #if list is empty this is false
+            if query[0] == "population":
+                print("population state [x]")
+                print("population timezone [x]")
+                print("population city [x] (state x)")
+            if query[0] == "density":
+                print("density city [x] (state x)")
+            if query[0] == "timezone":
+                print("timezone city [x] (state x)")
+            if query[0] == "state":
+                print("state city [x]")
+    success = False
