@@ -52,16 +52,20 @@ while (run):
         #density city x (state x)
         #timezone city x (state x)
         if query[3] == "city":
+            pass
             
         
     if query[1] == "city":
+        pass
         #command could be:
         #population city [x] (state x)
         #density city x (state x)
         #timezone city x (state x)
         #state city x
     if query[1] == "timezone":
+        pass
         #add all population of timezone and print
 
     if not success:
+        pass
         #user failed to input a correct command, help them out
