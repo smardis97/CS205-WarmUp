@@ -116,4 +116,16 @@ while run:
             cur.execute("SELECT city_name FROM Cities WHERE rowid = ?", (capital_rowid,))
             print(cur.fetchone()[0])
 
-    # if not success: #user failed to input a correct command, help them out
+    if not success: #user failed to input a correct command, help them out
+        if query: #if list is empty this is false
+            if query[0] == "population":
+                print("population state [x]")
+                print("population timezone [x]")
+                print("population city [x] (state x)")
+            if query[0] == "density":
+                print("density city [x] (state x)")
+            if query[0] == "timezone":
+                print("timezone city [x] (state x)")
+            if query[0] == "state":
+                print("state city [x]")
+    success = False
