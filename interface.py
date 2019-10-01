@@ -105,4 +105,10 @@ while run:
             print(cur.fetchone()[0])
             success = True
 
+        if query[0] == "capital" and query[1] == "state": #capital state [x]
+            cur.execute("SELECT capital_city_id FROM States WHERE state_name = ?", (query[2],))
+            capital_rowid = cur.fetchone()[0]
+            cur.execute("SELECT city_name FROM Cities WHERE rowid = ?", (capital_rowid,))
+            print(cur.fetchone()[0])
+
     # if not success: #user failed to input a correct command, help them out
