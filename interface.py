@@ -66,7 +66,6 @@ while run:
                 except IndexError:  # index 3 doesnt exist, no state specified.
                     cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
                     rows = cur.fetchall()
-                    print(rows)
                     for row in rows:
                         print("%s, %s: %s" % (query[2], row[1], row[2]))
                     success = True
