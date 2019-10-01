@@ -62,12 +62,14 @@ while (run):
                         cur.execute("SELECT population FROM Cities WHERE state = ? AND city_name = ?", (query[4], query[2],))
                         print(cur.fetchone()[0])
                         success = True
-                #except IndexError: #index 3 doesnt exist, no state specified.
-                    #cur.execute("SELECT population AND state_name FROM Cities WHERE city_name = ?", (query[2],))
-                    #row = cur.fetchone()
-#currently working on making this one print out the state that the city is from     #print("%s, %s", query[2], row[])
-                    #print()
-                    #success = True
+                except IndexError: #index 3 doesnt exist, no state specified.
+                    cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
+                    rows = cur.fetchall()
+                    print(rows)
+                    for row in rows:
+                        print("%s, %s: %s" % (query[2], row[1], row[2]))
+                    success = True
+
         if (query[0] == "density"): #density city x (state x)
             if (query[1] == "city"):
                 try:
@@ -77,8 +79,10 @@ while (run):
                         print(cur.fetchone()[0])
                         success = True
                 except IndexError: #index 3 doesnt exist, no state specified.
-                    cur.execute("SELECT density FROM Cities WHERE city_name = ?", (query[2],))
-                    print(cur.fetchone()[0])
+                    cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
+                    rows = cur.fetchall()
+                    for row in rows:
+                        print("%s, %s: %s" % (query[2], row[1], row[3]))
                     success = True
                 
         if query[0] == "timezone": #timezone city x (state x)
@@ -90,8 +94,10 @@ while (run):
                         print(cur.fetchone()[0])
                         success = True
                 except IndexError: #index 3 doesnt exist, no state specified.
-                    cur.execute("SELECT timezone FROM Cities WHERE city_name = ?", (query[2],))
-                    print(cur.fetchone()[0])
+                    cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
+                    rows = cur.fetchall()
+                    for row in rows:
+                        print("%s, %s: %s" % (query[2], row[1], row[4]))
                     success = True
 
         if query[0] == "state" and query[1] == "city": #state city x
@@ -100,3 +106,4 @@ while (run):
             success = True
 
     #if not success: #user failed to input a correct command, help them out
+        
