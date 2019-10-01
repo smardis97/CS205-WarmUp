@@ -68,7 +68,6 @@ while (run):
 #currently working on making this one print out the state that the city is from     #print("%s, %s", query[2], row[])
                     #print()
                     #success = True
-
         if (query[0] == "density"): #density city x (state x)
             if (query[1] == "city"):
                 try:
@@ -101,4 +100,3 @@ while (run):
             success = True
 
     #if not success: #user failed to input a correct command, help them out
-        

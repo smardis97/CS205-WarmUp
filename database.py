@@ -117,7 +117,7 @@ def read_to_database():
     global cities
     data_file = open("US_Cities.csv")
     entries = csv.reader(data_file, delimiter=',')
-    
+
     for entry in entries:
         if entry[0] != "city":  # skip header line
             cities.append([entry[0], entry[3], parse_to_int(entry[8]), float(entry[10]), entry[13]])
