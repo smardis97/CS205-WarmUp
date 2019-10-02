@@ -100,60 +100,91 @@ while run:
         if query[1] == "timezone":  # population timezone [x]
             cur.execute("SELECT population FROM Cities WHERE timezone = ?", (query[2],))
             rows = cur.fetchall()
-            timezone_pop = 0
-            for row in rows:
-                if row[0] != -1:
-                    timezone_pop += row[0]
-            print(timezone_pop)
-            success = True
+            if len(rows) > 0:
+                timezone_pop = 0
+                for row in rows:
+                    if row[0] != -1:
+                        timezone_pop += row[0]
+                print(timezone_pop)
+                success = True
+            else:
+                print "Your query returned no results"
         if query[1] == "state":  # population state [x]
             cur.execute("SELECT state_population FROM States WHERE state_name = ?", (query[2],))
-            print(cur.fetchone()[0])
-            success = True
+            results = cur.fetchall()
+            if len(results) > 0:
+                print results[0]
+                success = True
+            else:
+                print "Your query returned no results"
         if query[1] == "city":  # population city [x] (state x)
             try:
                 check_if_exists = query[4]
                 if query[3] == "state":
                     cur.execute("SELECT population FROM Cities WHERE state = ? AND city_name = ?", (query[4], query[2],))
-                    print(cur.fetchone()[0])
-                    success = True
+                    results = cur.fetchall()
+                    if len(results) > 0:
+                        print results[0]
+                        success = True
+                    else:
+                        print "Your query returned no results"
+
             except IndexError:  # index 3 doesnt exist, no state specified.
                 cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
                 rows = cur.fetchall()
-                for row in rows:
-                    if row[2] == -1:
-                        print("%s, %s: Population Unlisted in Database" % (query[2], row[1]))
-                    else:
-                        print("%s, %s: %s" % (query[2], row[1], row[2]))
-                success = True
+                if len(rows) > 0:
+                    for row in rows:
+                        if row[2] == -1:
+                            print("%s, %s: Population Unlisted in Database" % (query[2], row[1]))
+                        else:
+                            print("%s, %s: %s" % (query[2], row[1], row[2]))
+                    success = True
+                else:
+                    print "Your query returned no results"
     elif query[0] == "density":  # density city x (state x)
         if query[1] == "city":
             try:
                 check_if_exists = query[4]
                 if query[3] == "state":
                     cur.execute("SELECT density FROM Cities WHERE state = ? AND city_name = ?", (query[4], query[2],))
-                    print(cur.fetchone()[0])
-                    success = True
+                    results = cur.fetchall()
+                    if len(results) > 0:
+                        print results[0]
+                        success = True
+                    else:
+                        print "Your query returned no results"
+
             except IndexError:  # index 3 doesnt exist, no state specified.
                 cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
                 rows = cur.fetchall()
-                for row in rows:
-                    print("%s, %s: %s" % (query[2], row[1], row[3]))
-                success = True
+                if len(rows) > 0:
+                    for row in rows:
+                        print("%s, %s: %s" % (query[2], row[1], row[3]))
+                    success = True
+                else:
+                    print "Your query returned no results"
     elif query[0] == "timezone":  # timezone city x (state x)
         if query[1] == "city":
             try:
                 check_if_exists = query[4]
                 if query[3] == "state":
                     cur.execute("SELECT timezone FROM Cities WHERE state = ? AND city_name = ?", (query[4], query[2],))
-                    print(cur.fetchone()[0])
-                    success = True
+                    results = cur.fetchall()
+                    if len(results) > 0:
+                        print results[0]
+                        success = True
+                    else:
+                        print "Your query returned no results"
+
             except IndexError:  # index 3 doesnt exist, no state specified.
                 cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
                 rows = cur.fetchall()
-                for row in rows:
-                    print("%s, %s: %s" % (query[2], row[1], row[4]))
-                success = True
+                if len(rows) > 0:
+                    for row in rows:
+                        print("%s, %s: %s" % (query[2], row[1], row[4]))
+                    success = True
+                else:
+                    print "Your query returned no results"
     elif query[0] == "state" and query[1] == "city":  # state city x
         cur.execute("SELECT state FROM Cities WHERE city_name = ?", (query[2],))
         rows = cur.fetchall()
@@ -162,9 +193,16 @@ while run:
         success = True
     elif query[0] == "capital" and query[1] == "state":  # capital state [x]
         cur.execute("SELECT capital_city_id FROM States WHERE state_name = ?", (query[2],))
-        capital_rowid = cur.fetchone()[0]
-        cur.execute("SELECT city_name FROM Cities WHERE rowid = ?", (capital_rowid,))
-        print(cur.fetchone()[0])
+        try:
+            capital_rowid = cur.fetchone()[0]
+            cur.execute("SELECT city_name FROM Cities WHERE rowid = ?", (capital_rowid,))
+            results = cur.fetchall()
+            if len(results) > 0:
+                print results[0]
+            else:
+                print "Your query returned no results"
+        except TypeError:
+            print "Your query returned no results"
 
     if not success:  # user failed to input a correct command, help them out
         if query:  # if list is empty this is false
@@ -183,7 +221,7 @@ while run:
                 print("State command: ")
                 print("state city [x]")
         
-        print("\nYour query was unsuccessful. Make sure to properly capitalize state and "
-              "city names, as well as use proper names for timezones (ie, America/Denver)."
-              " The help command can show you how to structure valid commands.")
+        print("\nYour query was unsuccessful. Make sure to properly capitalize state and city names,")
+        print("as well as use proper names for timezones (ie, America/Denver).")
+        print("The help command can show you how to structure valid commands.")
     success = False
