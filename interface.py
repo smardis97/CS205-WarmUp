@@ -1,17 +1,3 @@
-# population state [x]
-# population timezone x
-# population city [x] (state x)
-
-# density city x (state x)
-
-# timezone city x (state x)
-
-# state city x
-
-# exit
-# help
-# reload
-
 from database import *
 
 valid_commands = [
@@ -71,8 +57,13 @@ def print_help():
     # print all available commands
     print("help - prints all user commands")
     print("exit - quit the system")
-    print("reload = reload the database")
-    print("")
+    print("reload - reload the database")
+    print("population state [x] - get the population for state [x]")
+    print("population timezone [x] - get the population for timezone [x]")
+    print("population city [x] (state [y]) - get the population for city [x]. you can also specify which state it's in, [y]")
+    print("density city [x] (state [y]) - get the density for city [x]. you can also specify which state it's in, [y]")
+    print("timezone city [x] (state [y]) - get the timezone for city [x]. you can also specify which state it's in, [y]")
+    print("state city [x] - get the state or states with a city by that name in it.")
 
 reinit_database()
 run = True
@@ -93,36 +84,37 @@ while run:
     
     # if it got to this point, it's an actual query of the database
     if query[0] == "population":
-        if query[1] == "timezone":  # population timezone [x]
-            cur.execute("SELECT population FROM Cities WHERE timezone = ?", (query[2],))
-            rows = cur.fetchall()
-            timezone_pop = 0
-            for row in rows:
-                if row[0] != -1:
-                    timezone_pop += row[0]
-            print(timezone_pop)
-            success = True
-        if query[1] == "state":  # population state [x]
-            cur.execute("SELECT state_population FROM States WHERE state_name = ?", (query[2],))
-            print(cur.fetchone()[0])
-            success = True
-        if query[1] == "city":  # population city [x] (state x)
-            try:
-                check_if_exists = query[4]
-                if query[3] == "state":
-                    cur.execute("SELECT population FROM Cities WHERE state = ? AND city_name = ?", (query[4], query[2],))
-                    print(cur.fetchone()[0])
-                    success = True
-            except IndexError:  # index 3 doesnt exist, no state specified.
-                cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
+            if query[1] == "timezone":  # population timezone [x]
+                cur.execute("SELECT population FROM Cities WHERE timezone = ?", (query[2],))
                 rows = cur.fetchall()
+                timezone_pop = 0
                 for row in rows:
-                    if row[2] == -1:
-                        print("%s, %s: Population Unlisted in Database" % (query[2], row[1]))
-                    else:
-                        print("%s, %s: %s" % (query[2], row[1], row[2]))
+                    if row[0] != -1:
+                        timezone_pop += row[0]
+                print(timezone_pop)
                 success = True
-    elif query[0] == "density":  # density city x (state x)
+            if query[1] == "state":  # population state [x]
+                cur.execute("SELECT state_population FROM States WHERE state_name = ?", (query[2],))
+                print(cur.fetchone()[0])
+                success = True
+            if query[1] == "city":  # population city [x] (state x)
+                try:
+                    check_if_exists = query[4]
+                    if query[3] == "state":
+                        cur.execute("SELECT population FROM Cities WHERE state = ? AND city_name = ?", (query[4], query[2],))
+                        print(cur.fetchone()[0])
+                        success = True
+                except IndexError:  # index 3 doesnt exist, no state specified.
+                    cur.execute("SELECT * FROM Cities WHERE city_name = ?", (query[2],))
+                    rows = cur.fetchall()
+                    for row in rows:
+                        if row[2] == -1:
+                            print("%s, %s: Population Unlisted in Database" % (query[2], row[1]))
+                        else:
+                            print("%s, %s: %s" % (query[2], row[1], row[2]))
+                    success = True
+        
+    elif query[0] == "density": # density city x (state x)
         if query[1] == "city":
             try:
                 check_if_exists = query[4]
@@ -165,13 +157,21 @@ while run:
     if not success:  # user failed to input a correct command, help them out
         if query:  # if list is empty this is false
             if query[0] == "population":
+                print("Population commands: ")
                 print("population state [x]")
                 print("population timezone [x]")
                 print("population city [x] (state [x])")
             if query[0] == "density":
+                print("Density command: ")
                 print("density city [x] (state [x])")
             if query[0] == "timezone":
+                print("Timezone command: ")
                 print("timezone city [x] (state [x])")
             if query[0] == "state":
+                print("State command: ")
                 print("state city [x]")
+        
+        print("\nYour query was unsuccessful. Make sure to properly capitalize state and "
+              "city names, as well as use proper names for timezones (ie, America/Denver)."
+              " The help command can show you how to structure valid commands.")
     success = False
