@@ -7,10 +7,16 @@ cur = conn.cursor()
 
 
 def read_to_database():
-    #state_population functions as a dictionary, where the state name is the key,
-    #and the the population is the value. When the data from the csv is read using
-    #the below code, the key is identifed when a particular cell in the
-    #state_name row is read.
+    # state_population functions as a dictionary, where the state name is the key,
+    # and the the population is the value. When the data from the csv is read using
+    # the below code, the key is identifed when a particular cell in the
+    # state_name row is read. Where the value for a partular state in state_population
+    # is edited in the dictionary depends on the state_name read from the csv.
+    # If state for a city is "New York", then the value for 'New York' in the
+    # state_population dictionary will change, and not say 'Vermont'.
+    # At the end of reading the csv, this will contain the state population
+    # for every single state, effectively adding a state population section
+    # without having the state population data beforehand.
     state_population = {
         'Alabama': 0,
         'Alaska': 0,
@@ -65,6 +71,9 @@ def read_to_database():
         'Wyoming': 0
     }
 
+    # These are hard coded into the database, has no interaction from the csv.
+    # This is a dictionary where the key is the state, and the value is the
+    # capital of the state
     state_capitals = {
         'Alabama': 'Montgomery',
         'Alaska': 'Juneau',
@@ -122,21 +131,25 @@ def read_to_database():
     cities = []
     data_file = open("US_Cities.csv")
     entries = csv.reader(data_file, delimiter=',')
+    # reads into the csv and retrieves the data
 
     for entry in entries:
-        if entry[0] != "city":  # skip header line
-            #this reads into the the csv for every remaining line in the file,
-            #where enrty[0] is the city row of the csv,
-            #entry[3] is the state_name row, entry[8] is the population row,
-            #entry[10] is the density row, and entry[13] is the timezone row.
+        if entry[0] != "city":  # skip header line, the line with the city, city_ascii,
+                                # state_id, and so on
+
+            # the line below reads into the the csv for every remaining line in the file,
+            # where enrty[0] is the city row of the csv,
+            # entry[3] is the state_name row, entry[8] is the population row,
+            # entry[10] is the density row, and entry[13] is the timezone row.
 
             cities.append([entry[0], entry[3], parse_to_int(entry[8]), float(entry[10]), entry[13]])
 
             # Construct cities = [[city, state, population, density, timezone]]
-            #parse_to_int and float are used on entry[8] and entry[10] respectively since
-            #all of the data in the csv are regarded by default as strings, and needs to be
-            #converted to the correct type so they will be seen as numbers and can be used
-            #as such.
+            # cities becomes a 2D array here 
+            # parse_to_int and float are used on entry[8] and entry[10] respectively since
+            # all of the data in the csv are regarded by default as strings, and needs to be
+            # converted to the correct type so they will be seen as numbers and can be used
+            # as such.
 
     for city in cities:
         if city[2] != -1:  # -1 indicates the csv had no population data for that city, as some cells
@@ -154,11 +167,20 @@ def read_to_database():
     # add states to the States table
     for state in state_population:
         # rowid is built in unique id in sqlite
+        # this puts the state and state captial into the database
+
         cur.execute("SELECT rowid FROM Cities WHERE state = ? AND city_name = ?", (state, state_capitals[state]))
         unique_id = cur.fetchone()[0]
         cur.execute("INSERT INTO States VALUES (?, ?, ?)", (state, unique_id, state_population[state]))
 
-
+# this is used when reading into the csv. In our csv file, some of the lines are blank,
+# meaning there is nothing in the cell. This function serves to check to see if the cell
+# being checked is empty or not, as all the "cells" of our database need to hold something,
+# even if there is nothing available from the csv cell to put into a certain "cell" of our database.
+# When a cell read from the csv is blank, this function returns a value of -1 to put into the database, so it knows that
+# this cell is blank. Otherwise it returns the value converted into an integer, as all the data read from the csv is considered
+# a string, and needs to be converted to the correct data type.
+ 
 def parse_to_int(string):
     if string == '':
         return -1
@@ -166,6 +188,7 @@ def parse_to_int(string):
         return int(string)
 
 
+#this deletes the database.db file, then reads from the csv file and reinitializes 
 def reinit_database():
     global cur
 
