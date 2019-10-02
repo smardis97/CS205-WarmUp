@@ -167,11 +167,11 @@ while run:
             if query[0] == "population":
                 print("population state [x]")
                 print("population timezone [x]")
-                print("population city [x] (state x)")
+                print("population city [x] (state [x])")
             if query[0] == "density":
-                print("density city [x] (state x)")
+                print("density city [x] (state [x])")
             if query[0] == "timezone":
-                print("timezone city [x] (state x)")
+                print("timezone city [x] (state [x])")
             if query[0] == "state":
                 print("state city [x]")
     success = False
