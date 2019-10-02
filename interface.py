@@ -57,10 +57,17 @@ def validate_and_split(query):
                 divided_query.append(next_block)
                 next_block = ""
             else:
-                last_word += " " + next_block
-                next_block = ""
-                divided_query.append(last_word)
-                last_word = ""
+                if not valid_commands.__contains__(next_block):
+                    last_word += " " + next_block
+                    next_block = ""
+                    divided_query.append(last_word)
+                    last_word = ""
+                else:
+                    multi_word = False
+                    divided_query.append(last_word)
+                    divided_query.append(next_block)
+                    last_word = ""
+                    next_block = ""
         else:
             next_block += char
 
