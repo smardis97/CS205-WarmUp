@@ -13,36 +13,44 @@ valid_commands = [
 ]
 
 
+# In order to properly handle city and state names that contain more than one word,
+# like "New York" and "Little Rock", we cannot simply divide the query by the space
+# delimiter.
+#
+# Whenever validate_and_split finds a word in the query that is not one of the expected commands
+# it assumes that it is part of a multi-part place name. It adds each non-command word after
+# that until it encounters a valid command word, or reaches the end of the file.
+# It then adds the entire name as a single element of the list, before moving of.
 def validate_and_split(query):
-    divided_query = []
+    divided_query = []  # will contain the separated arguments
     next_block = ""
     last_word = ""
     multi_word = False
     for char in query:
-        if char == " ":
-            if not multi_word:
-                if not valid_commands.__contains__(next_block):
+        if char == " ":  # space is the argument delimiter
+            if not multi_word:  # standard procedure when not expecting a name
+                if not valid_commands.__contains__(next_block):  # if the new word is not a command
                     multi_word = True
-                    last_word = next_block
+                    last_word = next_block  # last word will contain all of the multi-part name
                     next_block = ""
                 else:
                     divided_query.append(next_block)
                     next_block = ""
-            else:
-                if not valid_commands.__contains__(next_block):
+            else:  # if already expecting a name
+                if not valid_commands.__contains__(next_block):  # next part of the name
                     last_word += " " + next_block
                     next_block = ""
-                else:
+                else:  # if next_block is a valid command, then the place name can be added
                     multi_word = False
                     divided_query.append(last_word)
                     divided_query.append(next_block)
                     last_word = ""
                     next_block = ""
-        elif char == "%":
+        elif char == "%":  # % is the end character for the query
             if not multi_word:
                 divided_query.append(next_block)
                 next_block = ""
-            else:
+            else:  # ensures that multi-part names get added properly at the end of a query
                 if not valid_commands.__contains__(next_block):
                     last_word += " " + next_block
                     next_block = ""
@@ -54,16 +62,16 @@ def validate_and_split(query):
                     divided_query.append(next_block)
                     last_word = ""
                     next_block = ""
-        else:
+        else:  # add characters to next block until reaching a space or %
             next_block += char
 
-    if len(divided_query) == 1:
+    if len(divided_query) == 1:  # make sure single part queries are valid
         if not valid_commands.__contains__(divided_query[0]):
             divided_query.append("ERROR")
         else:
             if divided_query[0] is not "reload" and divided_query[0] is not "help" and divided_query[0] is not "exit":
                 divided_query.append("ERROR")
-    elif len(divided_query) == 2:
+    elif len(divided_query) == 2:  # there are no valid two part queries so this must be a mistake
         divided_query.append("ERROR")
 
     return divided_query
