@@ -80,6 +80,7 @@ def print_help():
     print("density city [x] (state [y]) - get the density for city [x]. you can also specify which state it's in, [y]")
     print("timezone city [x] (state [y]) - get the timezone for city [x]. you can also specify which state it's in, [y]")
     print("state city [x] - get the state or states with a city by that name in it.")
+    print("capital state [x] - get the capital of the state.")
 
 reinit_database()
 run = True
@@ -223,6 +224,9 @@ while run:
             if query[0] == "state":
                 print("State command: ")
                 print("state city [x]")
+            if query[0] == "capital":
+                print("Capital of state command: ")
+                print("capital state [x]")
         
         print("\nYour query was unsuccessful. Make sure to properly capitalize state and city names,")
         print("as well as use proper names for timezones (ie, America/Denver).")
