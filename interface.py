@@ -1,17 +1,3 @@
-# population state [x]
-# population timezone x
-# population city [x] (state x)
-
-# density city x (state x)
-
-# timezone city x (state x)
-
-# state city x
-
-# exit
-# help
-# reload
-
 from database import *
 
 valid_commands = [
@@ -78,8 +64,13 @@ def print_help():
     # print all available commands
     print("help - prints all user commands")
     print("exit - quit the system")
-    print("reload = reload the database")
-    print("")
+    print("reload - reload the database")
+    print("population state [x] - get the population for state [x]")
+    print("population timezone [x] - get the population for timezone [x]")
+    print("population city [x] (state [y]) - get the population for city [x]. you can also specify which state it's in, [y]")
+    print("density city [x] (state [y]) - get the density for city [x]. you can also specify which state it's in, [y]")
+    print("timezone city [x] (state [y]) - get the timezone for city [x]. you can also specify which state it's in, [y]")
+    print("state city [x] - get the state or states with a city by that name in it.")
 
 reinit_database()
 run = True
@@ -172,13 +163,21 @@ while run:
     if not success:  # user failed to input a correct command, help them out
         if query:  # if list is empty this is false
             if query[0] == "population":
+                print("Population commands: ")
                 print("population state [x]")
                 print("population timezone [x]")
                 print("population city [x] (state [x])")
             if query[0] == "density":
+                print("Density command: ")
                 print("density city [x] (state [x])")
             if query[0] == "timezone":
+                print("Timezone command: ")
                 print("timezone city [x] (state [x])")
             if query[0] == "state":
+                print("State command: ")
                 print("state city [x]")
+        
+        print("\nYour query was unsuccessful. Make sure to properly capitalize state and "
+              "city names, as well as use proper names for timezones (ie, America/Denver)."
+              " The help command can show you how to structure valid commands.")
     success = False
