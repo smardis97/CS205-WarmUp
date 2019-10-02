@@ -7,6 +7,10 @@ cur = conn.cursor()
 
 
 def read_to_database():
+    #state_population functions as a dictionary, where the state name is the key,
+    #and the the population is the value. When the data from the csv is read using
+    #the below code, the key is identifed when a particular cell in the
+    #state_name row is read.
     state_population = {
         'Alabama': 0,
         'Alaska': 0,
@@ -121,17 +125,31 @@ def read_to_database():
 
     for entry in entries:
         if entry[0] != "city":  # skip header line
+            #this reads into the the csv for every remaining line in the file,
+            #where enrty[0] is the city row of the csv,
+            #entry[3] is the state_name row, entry[8] is the population row,
+            #entry[10] is the density row, and entry[13] is the timezone row.
+
             cities.append([entry[0], entry[3], parse_to_int(entry[8]), float(entry[10]), entry[13]])
+
             # Construct cities = [[city, state, population, density, timezone]]
+            #parse_to_int and float are used on entry[8] and entry[10] respectively since
+            #all of the data in the csv are regarded by default as strings, and needs to be
+            #converted to the correct type so they will be seen as numbers and can be used
+            #as such.
 
     for city in cities:
-        if city[2] != -1:  # -1 indicates the csv had no population data for that city
+        if city[2] != -1:  # -1 indicates the csv had no population data for that city, as some cells
+                           # in the csv for population are blank
             state_population[city[1]] += city[2]
             # Count population of each state
 
     # add cities to the Cities table
     for city in cities:
+        
         cur.execute("INSERT INTO Cities VALUES (?, ?, ?, ?, ?)", (city[0], city[1], city[2], city[3], city[4]))
+        #the categories for the cities table in this for loop are as in the "Contstruct Cities"
+        #comment above, where city[0] is city, city[1] is state, and so forth
 
     # add states to the States table
     for state in state_population:
