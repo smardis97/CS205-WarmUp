@@ -64,6 +64,11 @@ def validate_and_split(query):
         else:
             next_block += char
 
+    if len(divided_query) == 2:
+        divided_query.append("ERROR")
+    elif len(divided_query) == 1 and not valid_commands.__contains__(divided_query[0]):
+        divided_query.append("ERROR")
+
     return divided_query
 
 
