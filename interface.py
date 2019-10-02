@@ -80,13 +80,13 @@ success = False
 while run:
     query = validate_and_split(raw_input("-> ") + "%")
     # start with checking if it's the three "basic" commands
-    if query == "exit":
+    if query[0] == "exit":
         run = False
         success = True
-    if query == "help":
+    if query[0] == "help":
         success = True
         print_help()
-    if query == "reload":
+    if query[0] == "reload":
         success = True
         reinit_database()
         print("Database reloaded")
